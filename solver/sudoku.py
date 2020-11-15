@@ -2,6 +2,8 @@
 # ------------------------------
 
 import numpy as np
+import square
+import minpq
 
 class Sudoku:
 
@@ -12,6 +14,14 @@ class Sudoku:
         self.grid = self._read_sudoku(file_name)
 
     # PUBLIC METHODS -----------------------------------------------------------
+
+    # method to solve the sudoku
+    def solve(self):
+        self.pq = self._init_pq()
+        while (self.pq.last > 0 and self.pq.peek().key() == 1):
+            sqr = self.pq.pop()
+            self._update(sqr.r, sqr.c, sqr.options[0])
+
 
     # method to report if the sudoku is in a bad state
     # will return true if it finds something wrong
@@ -31,24 +41,16 @@ class Sudoku:
 
     # method to test whether the row r is in a bad state
     def bad_row(self, r):
-        row = self.grid[r]                                                      # get the row
-        return self.bad(row)                                                    # test the row
+        return self.bad(self.get_row(r))                                        # test the row
 
     # method to test whether the column c is in a bad state
     def bad_col(self, c):
-        col = np.zeros(9, dtype=int)                                            # get the column
-        for r in range(0, 9):
-            col[r] = self.grid[r][c]
-        return self.bad(col)                                                    # test the column
+        return self.bad(self.get_col(c))                                        # test the column
 
     # method to test whether the box (r,c) is in a bad state
     # the index (r,c) is on the big grid
     def bad_box(self, r, c):
-        box = np.zeros(9, dtype=int)                                            # get the box
-        for i in range(0, 3):
-            for j in range(0, 3):
-                box[3*i+j] = self.grid[3*r+i][3*c+j]
-        return self.bad(box)                                                    # test the column
+        return self.bad(self.get_box(r, c))                                     # test the box
 
     # method to determine whether the array (length 9) is bad
     # other methods should construct an array corresponding to their
@@ -71,7 +73,46 @@ class Sudoku:
                     return False
         return (not self.in_bad_state())                                        # check if the sudoku is in a bad state
 
+    # GETTER METHODS -----------------------------------------------------------
+
+    # getter method for a row (returns an array)
+    def get_row(self, r):
+        return list(self.grid[r])
+
+    # getter method for a row (returns an array)
+    def get_col(self, c):
+        col = []
+        for r in range(0, 9):
+            col.append(self.grid[r][c])
+        return col
+
+    # getter method for a row (returns an array)
+    # the index (r,c) is on the big grid
+    def get_box(self, r, c):
+        box = []
+        for i in range(0, 3):
+            for j in range(0, 3):
+                box.append(self.grid[3*r+i][3*c+j])
+        return box
+
     # PRIVATE METHODS ----------------------------------------------------------
+
+    # method to update the value of an entry in the grid
+    # the position (r,c) and the value to be set should be sent in
+    def _update(self, r, c, val):
+        self.grid[r][c] = val
+        self.pq.update(self)
+
+    # method to initialize the priority queue
+    def _init_pq(self):
+        pq = minpq.MinPriorityQueue()
+        for r in range(0, 9):                                                   # initialize pq
+            for c in range(0, 9):
+                if (self.grid[r][c] == 0):                                      # test if value is blank
+                    sqr = square.Square(r, c)
+                    sqr.update(self)
+                    pq.push(sqr.key(), sqr)
+        return pq
 
     # private method to read in the sudoku
     def _read_sudoku(self, file_name):
