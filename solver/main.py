@@ -5,6 +5,7 @@ import sudoku
 # main method
 def main():
     s = sudoku.Sudoku("../puzzles/s01a.txt")
-    print(s)
+    print(s.in_bad_state())
+    print(s.is_solved())
 
 main()
