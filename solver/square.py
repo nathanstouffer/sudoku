@@ -22,7 +22,7 @@ class Square:
         return len(self.options)
 
     # method to update the state of the options array
-    def update(self, puzzle):
+    def update_square(self, puzzle):
         row = puzzle.get_row(self.r)
         col = puzzle.get_col(self.c)
         box = puzzle.get_box(int(self.r/3), int(self.c/3))

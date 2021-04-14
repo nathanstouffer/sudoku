@@ -43,7 +43,7 @@ class MinPriorityQueue:
     # method to update the priority queue according to the new state of the grid
     def update(self, puzzle):
         for i in range(1, self.last+1):
-            self.items[i].update(puzzle)
+            self.items[i].update_square(puzzle)
             self.keys[i] = self.items[i].key()
         self._fix()
 

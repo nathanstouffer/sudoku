@@ -110,7 +110,7 @@ class Sudoku:
             for c in range(0, 9):
                 if (self.grid[r][c] == 0):                                      # test if value is blank
                     sqr = square.Square(r, c)
-                    sqr.update(self)
+                    sqr.update_square(self)
                     pq.push(sqr.key(), sqr)
         return pq
 
@@ -137,7 +137,11 @@ class Sudoku:
         ret = ""                                        # return string
         null = "0"                                      # value of null character printed to the screen
         for r in range(0, 9):                           # iterate over rows
+            if (r != 0 and r % 3 == 0):
+                ret += "------|-------|------\n"
             for c in range(0, 9):                       # iterate over column
+                if (c != 0 and c % 3 == 0):
+                    ret += "| "
                 val = self.grid[r][c]                   # get value
                 if (val != 0):                          # check if value exists (0 => unkown)
                     ret += str(self.grid[r][c]) + " "   # if value exists, add it to the output
